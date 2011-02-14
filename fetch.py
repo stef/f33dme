@@ -30,6 +30,7 @@ from datetime import datetime
 
 if __name__ == '__main__':
     feeds = Feed.objects.all()
+    counter = 0
     for feed in feeds:
         f = parse(feed.url)
         if not f:
@@ -37,16 +38,21 @@ if __name__ == '__main__':
         d = feed.updated
         for item in reversed(f['entries']):
             tmp_date = datetime(*item['updated_parsed'][:6])
-            if tmp_date < feed.updated:
+            if tmp_date <= feed.updated:
                 continue
             if tmp_date > d:
                 d = tmp_date
             # title content updated
-            c = unicode(item.content[0].value)
+            try:
+                c = unicode(item.content[0].value)
+            except:
+                c = unicode(item['summary'])
             t = unicode(item['title'])
             u = item['links'][0]['href']
             # date as tmp_date?!
             new_item = Item(url=u, title=t, content=c, feed=feed, date=tmp_date)
             new_item.save()
+            counter += 1
         feed.updated = d
         feed.save()
+    print '[!] %d item added' % counter
