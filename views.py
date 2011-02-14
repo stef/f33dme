@@ -17,11 +17,11 @@
 
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
-from models import Tag, Item
+from models import Tag, Item, Feed
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from forms import FeedForm
 from django.conf import settings
-from datetime import datetime, timedelta
+import opml
 
 
 def index(request):
@@ -86,4 +86,17 @@ def bulk_archive(request, page_id):
     for item in items.object_list:
         item.archived = True
         item.save()
+    return HttpResponse('OK')
+
+def opml_import(request, url):
+    try:
+        o = opml.parse(url)
+    except:
+        return HttpResponse('Cannot parse opml file %s' % url)
+    for f in o:
+        new = Feed.objects.create(url = f.xmlUrl,
+                                  #tags = self.cleaned_data['tags'],
+                                  name = f.title,
+                                  )
+        new.save()
     return HttpResponse('OK')

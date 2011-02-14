@@ -31,6 +31,7 @@ urlpatterns = patterns('',
     (r'^add_feed$', view.add_feed),
     (r'^archive/(?P<item_id>.*)$', view.archive),
     (r'^bulk_archive/(?P<page_id>.*)$', view.bulk_archive),
+    (r'^opml_import/(?P<url>.*)$', view.opml_import),
     (root_url+'admin/', include(admin.site.urls)),
     #(root_url+'admin/', include(admin.site.urls)),
 )
