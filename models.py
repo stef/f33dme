@@ -61,7 +61,7 @@ class Item(models.Model):
     title = models.CharField(max_length=4096)
     content = models.TextField()
     url = models.URLField()
-    date = models.DateTimeField()
+    date = models.DateTimeField(auto_now_add=True)
     added = models.DateTimeField(auto_now_add=True)
     tags = models.ManyToManyField(Tag)
     feed = models.ForeignKey(Feed)
