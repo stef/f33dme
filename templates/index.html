@@ -47,9 +47,10 @@ $(document).ready(function(){
             href,
              {} ,
              function(data){
-                alert(data); 
+                window.location.reload();
+                return true;
              } 
-         );  
+        );
         return false;
     });
 });
@@ -80,9 +81,11 @@ $(document).ready(function(){
                 {% for tag in item.feed.tags.all %} <a href="{% root_url %}/tag/{{ tag.text }}" title="{{ tag }}">{{ tag }}</a>  {% endfor %}<br />
             </div>
         </div>
-    {% endfor %}
+        {% endfor %}
     <div class="pagination right">
+    {% if item_num %}
         <a href="{% root_url %}/bulk_archive/{{ page_num }}" title="Archive page" id="archive_all">Archive page</a>
+    {% endif %}
     <span class="step-links">
         {% if items.has_previous %}
             <a href="?page={{ items.previous_page_number }}">&lt;&lt; previous</a>
