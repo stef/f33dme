@@ -30,6 +30,7 @@ urlpatterns = patterns('',
     (r'^add_tag/(?P<tag_name>.*)$', view.add_tag),
     (r'^add_feed$', view.add_feed),
     (r'^archive/(?P<item_id>.*)$', view.archive),
+    (r'^bulk_archive/(?P<page_id>.*)$', view.bulk_archive),
     (root_url+'admin/', include(admin.site.urls)),
     #(root_url+'admin/', include(admin.site.urls)),
 )

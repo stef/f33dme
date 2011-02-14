@@ -20,24 +20,23 @@ from django.shortcuts import render_to_response
 from models import Tag, Item
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from forms import FeedForm
+from django.conf import settings
 from datetime import datetime, timedelta
 
 
-def index(request, paging=50):
+def index(request):
+    paging = settings.PAGING
     iall = Item.objects.filter(archived=False).all()
     item_num = len(iall)
     pag = Paginator(iall, paging)
     tags = Tag.objects.all()
-    try:
-        page = int(request.GET.get('page', '1'))
-    except ValueError:
-        page = 1
+    page = int(request.GET.get('page', '1'))
     try:
         items = pag.page(page)
     except (EmptyPage, InvalidPage):
         items = pag.page(1)
     form = FeedForm()
-    return render_to_response('index.html', {'items': items, 'tags': tags, 'form': form, 'item_num': item_num})
+    return render_to_response('index.html', {'items': items, 'tags': tags, 'form': form, 'item_num': item_num, 'page_num': page})
 
 def items_by_tag(request, tag_name):
     items = Item.objects.filter(tags__text__exact=tag_name)
@@ -71,4 +70,20 @@ def archive(request, item_id):
         return HttpResponse('No item found')
     item.archived = True
     item.save()
+    return HttpResponse('OK')
+
+def bulk_archive(request, page_id):
+    paging = settings.PAGING
+    iall = Item.objects.filter(archived=False).all()
+    item_num = len(iall)
+    pag = Paginator(iall, paging)
+    tags = Tag.objects.all()
+    page = int(request.GET.get('page', '1'))
+    try:
+        items = pag.page(page)
+    except:
+        return HttpResponse('Page not found')
+    for item in items.object_list:
+        item.archived = True
+        item.save()
     return HttpResponse('OK')

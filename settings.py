@@ -23,6 +23,8 @@ LANG='en_US'
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+PAGING = 10
+
 DEV_SERVER = True
 if globals().has_key('WSGI'):
     DEV_SERVER = False
@@ -114,9 +116,8 @@ INSTALLED_APPS = (
     'f33dme.common',
 )
 
-TINYMCE_COMPRESSOR = True
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.file'
+# SESSION_ENGINE = 'django.contrib.sessions.backends.file'
 
 try:
     from f33dme.local_settings import *
