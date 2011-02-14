@@ -34,23 +34,27 @@ if __name__ == '__main__':
     for feed in feeds:
         f = parse(feed.url)
         if not f:
+            print '[!] cannot parse %s - %s' % (feed.name, feed.url)
             continue
+        print '[!] parsing %s - %s' % (feed.name, feed.url)
         d = feed.updated
         for item in reversed(f['entries']):
-            tmp_date = datetime(*item['updated_parsed'][:6])
-            if tmp_date <= feed.updated:
-                continue
-            if tmp_date > d:
-                d = tmp_date
             # title content updated
             try:
                 c = unicode(item.content[0].value)
             except:
-                c = unicode(item['summary'])
+                if item.has_key('media_text'):
+                    c = unicode(item['media_text'])
+                elif item.has_key('summary'):
+                    c = unicode(item['summary'])
+                else:
+                    c = u'Not found any content, plz check the feed and fix me =)'
             t = unicode(item['title'])
             u = item['links'][0]['href']
+            if feed.item_set.filter(title=t).all():
+                continue
             # date as tmp_date?!
-            new_item = Item(url=u, title=t, content=c, feed=feed, date=tmp_date)
+            new_item = Item(url=u, title=t, content=c, feed=feed)
             new_item.save()
             counter += 1
         feed.updated = d
