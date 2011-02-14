@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load f33dme %}
+{% block scripts %}
+<script type="text/javascript" src="{% media_url %}/js/jquery-1.4.4.min.js"></script>
+<script type="text/javascript">
+
+$(document).ready(function(){
+    $('#add_tag').click(function() {
+        $('#tagdiv').toggle('slow');
+        return false;
+    });
+    $('#add_feed_link').click(function() {
+        $('#feeddiv').toggle('slow');
+        return false;
+    });
+    $('#post_new_tag').submit(function() {
+        var q = $("input[name='text']").val();
+        $.ajax({ url: "{% root_url %}/add_tag/"+q, context: document.body, success: function(){
+            $('#tagdiv').toggle('slow');
+        } });
+    });
+    $('#add_feed').submit(function() {
+        $.post( 
+         "{% root_url %}/add_feed", 
+            $("#add_feed").serialize(), 
+            function(data){ 
+                alert(data); 
+             } 
+         );  
+        return false;
+    });
+});
+</script>
+{% endblock %}
+{% block header %}
+<h1>F33dme <a href="{% root_url %}/add_feed" title="Add new feed" id="add_feed_link">[+]</a></h1>
+{% endblock %}
+{% block content %}
+<div id="feeddiv" class="hidden border half"><h4>Add new feed</h4>
+    <div >
+        <form action="{% root_url %}/add_feed" method="post" name="add_feed" id="add_feed">
+        {{ form.as_div }}
+        <div class="form-row"><input type="submit" value="ookay" /></div>
+        </form>
+    </div>
+</div>
+<h2>Latest items</h2>
+    {% for item in items.object_list %}
+        <div class="entry">
+            <h3><a href="{{ item.url }}">{{ item.title }}</a></h3>
+            <div class="item"><code>{{ item.content }}</code></div>
+            <div class="item_footer">Tags:
+                {% for tag in item.tags.all %} <a href="{% root_url %}/tag/{{ tag.text }}" title="{{ tag }}">{{ tag }}</a>  {% endfor %}
+                {% for tag in item.feed.tags.all %} <a href="{% root_url %}/tag/{{ tag.text }}" title="{{ tag }}">{{ tag }}</a>  {% endfor %}<br />
+            {{ item.date|date:"Y.m.d H:i:s" }}</div>
+        </div>
+    {% endfor %}
+<div class="pagination right">
+    <span class="step-links">
+        {% if items.has_previous %}
+            <a href="?page={{ items.previous_page_number }}">&lt;&lt; previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ items.number }} of {{ items.paginator.num_pages }}.
+        </span>
+
+        {% if items.has_next %}
+            <a href="?page={{ items.next_page_number }}">next &gt;&gt;</a>
+        {% endif %}
+    </span>
+</div>
+{% endblock %}
+{% block left %}
+<h1>All tags <a href="{% root_url %}/add_tag" title="Add a new tag" id="add_tag">[+]</a></h1>
+<div id="tagdiv" class="hidden border"><h4>Add new tag</h4><form action="{% root_url %}/add_tag" method="post" id="post_new_tag"><input type="text" name="text" /><br /><input type="submit" value="ookay" /></form> </div>
+<p>
+{% for tag in tags %}
+<a href="{% root_url %}/tag/{{ tag.text }}" title="{{ tag.text }}">{{ tag }}</a>
+{% endfor %}
+</p>
+{% endblock %}

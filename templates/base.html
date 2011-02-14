@@ -1,0 +1,36 @@
+{% load orginy %}<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="hu" xml:lang="hu">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="content-language" content="en" />
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <title>[!] f33dme {% block title %}{% endblock %}</title>
+    {% block scripts %}
+    {% endblock %}
+    <link rel="stylesheet" type="text/css" media="all" href="{% media_url %}/css/style.css" />
+    <link rel="stylesheet" type="text/css" media="print" href="{% media_url %}/css/print.css" />
+    {% block styles %}
+    {% endblock %}
+</head>
+<body>
+  <div id="loading"> </div>
+  <div id="header">
+      {% block header %}
+      {% endblock %}
+   <p><code class="red">f33dr34d3r</code></p>
+  </div>
+  <div id="content">
+      {% block content %}
+      {% endblock %}
+  </div>
+  <div id="left">
+      {% block left %}
+      {% endblock %}
+  </div>
+  <div id="footer">
+  </div>
+{% block other_content %} {% endblock %}
+</body>
+</html>

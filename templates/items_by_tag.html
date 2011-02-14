@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load orginy %}
+{% block content %}
+<h3>Items with tag '{{ tag }}':</h3>
+{% if not items %}
+<h4>No Items found with this tag</h4>
+{% else %}
+ {% for item in items %}
+     <a href="{% root_url %}/item/{{ item.id }}" title="{{ item.title }}">{{ item.title }}</a><br />
+ {% endfor %}
+{%endif%}
+{% endblock %}
