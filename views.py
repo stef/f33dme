@@ -23,8 +23,8 @@ from forms import FeedForm
 from datetime import datetime, timedelta
 
 
-def index(request, paging=10):
-    iall = Item.objects.all()
+def index(request, paging=50):
+    iall = Item.objects.filter(archived=False).all()
     item_num = len(iall)
     pag = Paginator(iall, paging)
     tags = Tag.objects.all()
@@ -37,7 +37,7 @@ def index(request, paging=10):
     except (EmptyPage, InvalidPage):
         items = pag.page(1)
     form = FeedForm()
-    return render_to_response('index.html', {'items': items, 'tags': tags, 'form': form})
+    return render_to_response('index.html', {'items': items, 'tags': tags, 'form': form, 'item_num': item_num})
 
 def items_by_tag(request, tag_name):
     items = Item.objects.filter(tags__text__exact=tag_name)
@@ -65,3 +65,10 @@ def add_feed(request):
         form = FeedForm()
     return HttpResponse('0')
 
+def archive(request, item_id):
+    item = Item.objects.get(id=item_id)
+    if not item:
+        return HttpResponse('No item found')
+    item.archived = True
+    item.save()
+    return HttpResponse('OK')

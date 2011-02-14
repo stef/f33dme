@@ -29,6 +29,17 @@ $(document).ready(function(){
          );  
         return false;
     });
+    $('.archive').click(function() {
+        var href= $(this).attr('href')
+        $.post( 
+            href,
+             {} ,
+            function(data){ 
+                alert(data); 
+             } 
+         );  
+        return false;
+    });
 });
 </script>
 {% endblock %}
@@ -44,15 +55,16 @@ $(document).ready(function(){
         </form>
     </div>
 </div>
-<h2>Latest items</h2>
+<h2>Latest unread items ({{ item_num }})</h2>
     {% for item in items.object_list %}
         <div class="entry">
             <h3><a href="{{ item.url }}">{{ item.title }}</a></h3>
-            <div class="item"><code>{{ item.content }}</code></div>
+            <div class="item"><code>{{ item.content|safe }}</code></div>
+            <div class="right right_float"><a href="{% root_url %}/archive/{{ item.id }}" class="archive" title="Archive">Archive</a></div>
             <div class="item_footer">Tags:
                 {% for tag in item.tags.all %} <a href="{% root_url %}/tag/{{ tag.text }}" title="{{ tag }}">{{ tag }}</a>  {% endfor %}
                 {% for tag in item.feed.tags.all %} <a href="{% root_url %}/tag/{{ tag.text }}" title="{{ tag }}">{{ tag }}</a>  {% endfor %}<br />
-            {{ item.date|date:"Y.m.d H:i:s" }}</div>
+                {{ item.date|date:"Y.m.d H:i:s" }}</div>
         </div>
     {% endfor %}
 <div class="pagination right">
