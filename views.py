@@ -22,6 +22,7 @@ from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from forms import FeedForm
 from django.conf import settings
 import opml
+from django.db.models import Q
 
 
 def index(request):
@@ -37,6 +38,37 @@ def index(request):
         items = pag.page(1)
     form = FeedForm()
     return render_to_response('index.html', {'items': items, 'tags': tags, 'form': form, 'item_num': item_num, 'page_num': page})
+
+def feed_view(request, id):
+    paging = settings.PAGING
+    iall = Item.objects.filter(feed__id=id).all()
+    item_num = len(iall)
+    pag = Paginator(iall, paging)
+    tags = Tag.objects.all()
+    page = int(request.GET.get('page', '1'))
+    try:
+        items = pag.page(page)
+    except (EmptyPage, InvalidPage):
+        items = pag.page(1)
+    form = FeedForm()
+    return render_to_response('index.html', {'items': items, 'tags': tags, 'form': form, 'item_num': item_num, 'page_num': page, 'msg': 'F33d "%s"' % Feed.objects.filter(id=id).all()[0].name})
+
+def search(request):
+    q = request.GET.get('q')
+    if not q:
+        return HttpResponse('no search strings found')
+    paging = settings.PAGING
+    iall = Item.objects.filter(Q(content__contains=q) | Q(title__contains=q)).all()
+    item_num = len(iall)
+    pag = Paginator(iall, paging)
+    tags = Tag.objects.all()
+    page = int(request.GET.get('page', '1'))
+    try:
+        items = pag.page(page)
+    except (EmptyPage, InvalidPage):
+        items = pag.page(1)
+    form = FeedForm()
+    return render_to_response('index.html', {'items': items, 'tags': tags, 'form': form, 'item_num': item_num, 'page_num': page, 'msg': 'Search result for "%s"' % q, 'q': q})
 
 def items_by_tag(request, tag_name):
     items = Item.objects.filter(tags__text__exact=tag_name)

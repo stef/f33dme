@@ -52,12 +52,18 @@ $(document).ready(function(){
              } 
         );
         return false;
+        });
+    $('#search_input').focus(function() {
+        if($(this).attr('value')  == '//Search'){
+            $(this).attr('value', '');
+        }
     });
 });
 </script>
 {% endblock %}
 {% block header %}
-<h1>F33dme <a href="{% root_url %}/add_feed" title="Add new feed" id="add_feed_link">[+]</a></h1>
+<div class="right right_float"><form method="get" action="{% root_url %}/search"><input type="text" name="q" value="{% if q %}{{ q }}{% else %}//Search{% endif %}" id="search_input"/></form></div>
+<h1>F33dme <a href="{% root_url %}/add_feed" title="Add new feed" id="add_feed_link">[+]</a>{% if msg%} - {{ msg }}{% endif %}</h1>
 {% endblock %}
 {% block content %}
 <div id="feeddiv" class="hidden border half"><h4>Add new feed</h4>
@@ -68,11 +74,11 @@ $(document).ready(function(){
         </form>
     </div>
    </div>
-<h2>Latest unread items ({{ item_num }})</h2>
+   <h2>Latest {% if not msg %}unread {%endif%}items ({{ item_num }})</h2>
     {% for item in items.object_list %}
     <div class="entry">
             <div class="right right_float"><a href="{% root_url %}/archive/{{ item.id }}" class="archive" title="Archive">Archive</a></div>
-            <div class="right right_float">{{ item.feed.name }}</div>
+            <div class="right right_float"><a href="{% root_url %}/feed/{{ item.feed.id }}" title="show only this feed">{{ item.feed.name }}</a></div>
             <h3><a href="{{ item.url }}">{{ item.title }}</a></h3>
             <div class="item"><code>{{ item.content|safe }}</code></div>
             <div class="right right_float">{{ item.date|date:"Y.m.d H:i:s" }}</div>
