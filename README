@@ -1,4 +1,6 @@
 
 DEPENDENCIES:
+ * python django
  * python opml - http://pypi.python.org/pypi/opml/0.5
+ * python feedparser
 
