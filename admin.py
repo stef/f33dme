@@ -16,7 +16,7 @@
 # (C) 2010- by Adam Tauber, <asciimoo@gmail.com>
 
 from django.contrib import admin
-from f33dme.models import Feed, Item, Tag
+from f33dme.models import Feed, Item
 
 class FeedAdmin(admin.ModelAdmin):
     pass

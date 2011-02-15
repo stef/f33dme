@@ -17,7 +17,7 @@
 
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
-from models import Tag, Item, Feed
+from models import Item, Feed
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from forms import FeedForm
 from django.conf import settings
@@ -30,28 +30,26 @@ def index(request):
     iall = Item.objects.filter(archived=False).all()
     item_num = len(iall)
     pag = Paginator(iall, paging)
-    tags = Tag.objects.all()
     page = int(request.GET.get('page', '1'))
     try:
         items = pag.page(page)
     except (EmptyPage, InvalidPage):
         items = pag.page(1)
     form = FeedForm()
-    return render_to_response('index.html', {'items': items, 'tags': tags, 'form': form, 'item_num': item_num, 'page_num': page})
+    return render_to_response('index.html', {'items': items, 'form': form, 'item_num': item_num, 'page_num': page})
 
 def feed_view(request, id):
     paging = settings.PAGING
     iall = Item.objects.filter(feed__id=id).all()
     item_num = len(iall)
     pag = Paginator(iall, paging)
-    tags = Tag.objects.all()
     page = int(request.GET.get('page', '1'))
     try:
         items = pag.page(page)
     except (EmptyPage, InvalidPage):
         items = pag.page(1)
     form = FeedForm()
-    return render_to_response('index.html', {'items': items, 'tags': tags, 'form': form, 'item_num': item_num, 'page_num': page, 'msg': 'F33d "%s"' % Feed.objects.filter(id=id).all()[0].name})
+    return render_to_response('index.html', {'items': items, 'form': form, 'item_num': item_num, 'page_num': page, 'msg': 'F33d "%s"' % Feed.objects.filter(id=id).all()[0].name})
 
 def search(request):
     q = request.GET.get('q')
@@ -61,29 +59,13 @@ def search(request):
     iall = Item.objects.filter(Q(content__contains=q) | Q(title__contains=q)).all()
     item_num = len(iall)
     pag = Paginator(iall, paging)
-    tags = Tag.objects.all()
     page = int(request.GET.get('page', '1'))
     try:
         items = pag.page(page)
     except (EmptyPage, InvalidPage):
         items = pag.page(1)
     form = FeedForm()
-    return render_to_response('index.html', {'items': items, 'tags': tags, 'form': form, 'item_num': item_num, 'page_num': page, 'msg': 'Search result for "%s"' % q, 'q': q})
-
-def items_by_tag(request, tag_name):
-    items = Item.objects.filter(tags__text__exact=tag_name)
-
-    return render_to_response('items_by_tag.html', {'tag': tag_name, 'items': items})
-
-def add_tag(request, tag_name):
-    items = Item.objects.filter(tags__text__exact=tag_name)
-    tag = Tag.objects.filter(text=tag_name)
-    if not tag:
-        tag = Tag(text=tag_name)
-        tag.save()
-        return HttpResponse('1')
-    else:
-        return HttpResponse('0')
+    return render_to_response('index.html', {'items': items, 'form': form, 'item_num': item_num, 'page_num': page, 'msg': 'Search result for "%s"' % q, 'q': q})
 
 def add_feed(request):
     if request.method == 'POST':
@@ -109,7 +91,6 @@ def bulk_archive(request, page_id):
     iall = Item.objects.filter(archived=False).all()
     item_num = len(iall)
     pag = Paginator(iall, paging)
-    tags = Tag.objects.all()
     page = int(request.GET.get('page', '1'))
     try:
         items = pag.page(page)

@@ -26,8 +26,6 @@ root_url = r'^'
 
 urlpatterns = patterns('',
     (r'^$', view.index),
-    (r'^tag/(?P<tag_name>.*)$', view.items_by_tag),
-    (r'^add_tag/(?P<tag_name>.*)$', view.add_tag),
     (r'^add_feed$', view.add_feed),
     (r'^archive/(?P<item_id>.*)$', view.archive),
     (r'^bulk_archive/(?P<page_id>.*)$', view.bulk_archive),

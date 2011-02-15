@@ -19,30 +19,9 @@ from django.db import models
 from django.conf import settings
 from datetime import datetime
 
-class Tag(models.Model):
-    text = models.CharField(max_length=64, unique=True)
-    score = models.FloatField(default=0.0)
-
-    def __unicode__(self):
-        return '%s (%d/%d/X)' % (self.text, self.score, self.item_number())
-   
-    class Meta:
-        ordering = ["-score"]
-   
-    class Admin:
-        pass
-    
-    def item_number(self):
-        return len(self.item_set.all())
-
-    def get_link(self):
-        return '<a href="/tags/%s">%s(%d)</a>' % (self.text, self.text, self.score)
-
-
 class Feed(models.Model):
     url = models.URLField()
     name = models.CharField(max_length=4096)
-    tags = models.ManyToManyField(Tag)
     updated = models.DateTimeField(default=datetime(1970, 1, 1))
     score = models.FloatField(default=0.0)
 
@@ -51,19 +30,13 @@ class Feed(models.Model):
     
     def item_number(self):
         return len(self.item_set.all())
-
-    def get_tags(self):
-        return ', '.join([tag.get_link() for tag in self.tags.all()])
    
-
-
 class Item(models.Model):
     title = models.CharField(max_length=4096)
     content = models.TextField()
     url = models.URLField()
     date = models.DateTimeField(auto_now_add=True)
     added = models.DateTimeField(auto_now_add=True)
-    tags = models.ManyToManyField(Tag)
     feed = models.ForeignKey(Feed)
     score = models.FloatField(default=0.0)
     archived = models.BooleanField(default=False)
@@ -81,9 +54,6 @@ class Item(models.Model):
     class Admin:
         pass
 
-    def get_tags(self):
-        return ', '.join([tag.get_link() for tag in self.tags.all()])
-   
     def get_nice_url(self):
         return ("%s/%d/%s") % (settings.ROOT_URL, self.id, self.title)
    

@@ -1,5 +1,22 @@
+# This file is part of f33dme.
+#
+#  f33dme is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Affero General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  f33dme is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Affero General Public License for more details.
+#
+#  You should have received a copy of the GNU Affero General Public License
+#  along with f33dme.  If not, see <http://www.gnu.org/licenses/>.
+#
+# (C) 2011- by Adam Tauber, <asciimoo@gmail.com>
+
 from django import forms
-from models import Feed, Tag
+from models import Feed
 from datetime import datetime
 from django.conf import settings
 
@@ -17,12 +34,5 @@ class FeedForm(BaseForm):
                                   #tags = self.cleaned_data['tags'],
                                   name = self.cleaned_data['name'],
                                   )
-
-        for tag in self.cleaned_data['tags'].split():
-            try:
-                t = Tag.objects.get(text=tag)
-                new.tags.add(t)
-            except:
-                new.tags.create(text=tag)
         return new
 
