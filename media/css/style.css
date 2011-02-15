@@ -1,6 +1,6 @@
 body { border: 0; padding: 0; margin: 0; background: #000000; color: #66FF00; font-family: Verdana,Arial,Helvetica,sans-serif;}
 img { border: 0; }
-h1, h2, h3, h4, div, ul { padding: 0; margin: 0; }
+h1, h2, h3, h4, div { padding: 0; margin: 0; }
 div#header { padding: 8px; border-bottom: 2px solid #FF0066; }
 div#header * { padding: 0; margin: 0; }
 div#content { margin-top: 10px;  position: relative; width: 80%; height: 100%; float: left; }
@@ -8,6 +8,7 @@ div#content h1 { margin-left: 10px; }
 div#left { float: left; position: relative; width: 20%; margin-top: 10px; }
 div#loading { display: none; width: 32px; height: 32px; position: absolute; top: 0; right: 0; background: url('../images/loader.gif')}
 div#feeddiv { margin: 0 40px 0 20px; }
+#search_input { border: 2px  solid #FF0066; padding: 8px; font-size: 1.8em; color: #444444; }
 input, textarea, button { background: #000000; border: 1px solid #FF0066; color: #66FF00; min-height: 20px; padding: 2px; margin-bottom: 2px; }
 div#calendar { float: right; margin-right: 40px; width: 60%; }
 .red { color: #FF0066; }
