@@ -1,6 +1,7 @@
 
 DEPENDENCIES:
- * python django
+ * python django - www.djangoproject.com/
  * python opml - http://pypi.python.org/pypi/opml/0.5
- * python feedparser
+ * python feedparser - http://www.feedparser.org/
+ * jquery - http://jquery.com/
 
