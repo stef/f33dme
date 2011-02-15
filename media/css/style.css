@@ -24,4 +24,4 @@ a { color: #FF0066; text-decoration: none; }
 a:hover { text-decoration: underline; }
 
 div.entry { margin: 10px; padding: 10px; border-bottom: 1px solid #66FF00;  }
-.item { padding: 4px 10px 4px 10px; background: #111111; border: 4px solid #000000; -moz-border-radius: 1em; -webkit-border-radius: 1em; }
+.item { padding: 4px 10px 4px 10px; background: #111111; border: 4px solid #000000; -moz-border-radius: 1em; -webkit-border-radius: 1em; overflow: auto; }
