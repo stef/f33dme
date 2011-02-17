@@ -17,6 +17,8 @@
 <body>
   <div id="loading"> </div>
   <div id="header">
+<div class="right right_float"><form method="get" action="{% root_url %}/search"><input type="text" name="q" value="{% if q %}{{ q }}{% else %}//Search{% endif %}" id="search_input"/></form></div>
+<h1>F33dme <a href="{% root_url %}/add_feed" title="Add new feed" id="add_feed_link">[+]</a>{% if msg%} - {{ msg }}{% endif %}</h1>
       {% block header %}
       {% endblock %}
    <p><code class="red">f33dr34d3r</code></p>

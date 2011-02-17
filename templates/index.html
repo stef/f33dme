@@ -37,7 +37,7 @@ $(document).ready(function(){
             href,
              {} ,
              function(data){
-                window.location.reload();
+                window.location = window.location.pathname;
                 return true;
              } 
         );
@@ -50,10 +50,6 @@ $(document).ready(function(){
     });
 });
 </script>
-{% endblock %}
-{% block header %}
-<div class="right right_float"><form method="get" action="{% root_url %}/search"><input type="text" name="q" value="{% if q %}{{ q }}{% else %}//Search{% endif %}" id="search_input"/></form></div>
-<h1>F33dme <a href="{% root_url %}/add_feed" title="Add new feed" id="add_feed_link">[+]</a>{% if msg%} - {{ msg }}{% endif %}</h1>
 {% endblock %}
 {% block content %}
 <div id="feeddiv" class="hidden border half"><h4>Add new feed</h4>
@@ -95,5 +91,5 @@ $(document).ready(function(){
 </div>
 {% endblock %}
 {% block left %}
-<h1>Feeds</h1>
+<h1><a href="{% root_url %}/feeds" title="feed list">Feeds</a></h1>
 {% endblock %}
