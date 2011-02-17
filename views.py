@@ -24,48 +24,31 @@ from django.conf import settings
 import opml
 from django.db.models import Q
 
+def _main_view(request, iall, template_vars={}):
+    paging = settings.PAGING
+    item_num = len(iall)
+    pag = Paginator(iall, paging)
+    page = int(request.GET.get('page', '1'))
+    try:
+        items = pag.page(page)
+    except (EmptyPage, InvalidPage):
+        items = pag.page(1)
+    form = FeedForm()
+    tpl_dict = {'items': items, 'form': form, 'item_num': item_num, 'page_num': page}
+    tpl_dict.update(template_vars)
+    return render_to_response('index.html', tpl_dict)
 
 def index(request):
-    paging = settings.PAGING
-    iall = Item.objects.filter(archived=False).all()
-    item_num = len(iall)
-    pag = Paginator(iall, paging)
-    page = int(request.GET.get('page', '1'))
-    try:
-        items = pag.page(page)
-    except (EmptyPage, InvalidPage):
-        items = pag.page(1)
-    form = FeedForm()
-    return render_to_response('index.html', {'items': items, 'form': form, 'item_num': item_num, 'page_num': page})
+    return _main_view(request, Item.objects.filter(archived=False).all())
 
-def feed_view(request, id):
-    paging = settings.PAGING
-    iall = Item.objects.filter(feed__id=id).all()
-    item_num = len(iall)
-    pag = Paginator(iall, paging)
-    page = int(request.GET.get('page', '1'))
-    try:
-        items = pag.page(page)
-    except (EmptyPage, InvalidPage):
-        items = pag.page(1)
-    form = FeedForm()
-    return render_to_response('index.html', {'items': items, 'form': form, 'item_num': item_num, 'page_num': page, 'msg': 'F33d "%s"' % Feed.objects.filter(id=id).all()[0].name})
+def feed_view(request, f_id):
+    return _main_view(request, Item.objects.filter(feed__id=f_id).all(), {'msg': 'F33d "%s"' % Feed.objects.filter(id=f_id).all()[0].name})
 
 def search(request):
     q = request.GET.get('q')
     if not q:
         return HttpResponse('no search strings found')
-    paging = settings.PAGING
-    iall = Item.objects.filter(Q(content__contains=q) | Q(title__contains=q)).all()
-    item_num = len(iall)
-    pag = Paginator(iall, paging)
-    page = int(request.GET.get('page', '1'))
-    try:
-        items = pag.page(page)
-    except (EmptyPage, InvalidPage):
-        items = pag.page(1)
-    form = FeedForm()
-    return render_to_response('index.html', {'items': items, 'form': form, 'item_num': item_num, 'page_num': page, 'msg': 'Search result for "%s"' % q, 'q': q})
+    return _main_view(request, Item.objects.filter(Q(content__contains=q) | Q(title__contains=q)).all(), {'msg': 'Search result for "%s"' % q, 'q': q})
 
 def add_feed(request):
     if request.method == 'POST':
@@ -85,6 +68,9 @@ def archive(request, item_id):
     item.archived = True
     item.save()
     return HttpResponse('OK')
+
+def feeds(request):
+    return render_to_response('feeds.html')
 
 def bulk_archive(request, page_id):
     paging = settings.PAGING
