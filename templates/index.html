@@ -35,7 +35,7 @@ $(document).ready(function(){
         var href= $(this).attr('href')
         $.post( 
             href,
-             {} ,
+            {ids: '{{ item_ids }}'} ,
              function(data){
                 window.location = window.location.pathname;
                 return true;
@@ -68,12 +68,12 @@ $(document).ready(function(){
             <h3><a href="{{ item.url }}">{{ item.title }}</a></h3>
             <div class="item"><code>{{ item.content|safe }}</code></div>
             <div class="right right_float">{{ item.date|date:"Y.m.d H:i:s" }}</div>
-            <div class="item_footer"><code>[asdf]</code></div>
+            <div class="item_footer"><code>[{% if item.archived %}archived{% else %}unread{% endif %}]</code></div>
         </div>
         {% endfor %}
     <div class="pagination right">
     {% if item_num %}
-        <a href="{% root_url %}/bulk_archive/{{ page_num }}" title="Archive page" id="archive_all">Archive page</a>
+        <a href="{% root_url %}/bulk_archive" title="Archive page" id="archive_all">Archive page</a>
     {% endif %}
     <span class="step-links">
         {% if items.has_previous %}

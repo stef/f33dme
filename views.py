@@ -34,7 +34,8 @@ def _main_view(request, iall, template_vars={}):
     except (EmptyPage, InvalidPage):
         items = pag.page(1)
     form = FeedForm()
-    tpl_dict = {'items': items, 'form': form, 'item_num': item_num, 'page_num': page}
+    item_ids = ' '.join([item.id.__str__() for item in items.object_list])
+    tpl_dict = {'items': items, 'form': form, 'item_num': item_num, 'page_num': page, 'item_ids': item_ids}
     tpl_dict.update(template_vars)
     return render_to_response('index.html', tpl_dict)
 
@@ -72,17 +73,14 @@ def archive(request, item_id):
 def feeds(request):
     return render_to_response('feeds.html')
 
-def bulk_archive(request, page_id):
-    paging = settings.PAGING
-    iall = Item.objects.filter(archived=False).all()
-    item_num = len(iall)
-    pag = Paginator(iall, paging)
-    page = int(request.GET.get('page', '1'))
-    try:
-        items = pag.page(page)
-    except:
-        return HttpResponse('Page not found')
-    for item in items.object_list:
+def bulk_archive(request):
+    if not request.POST.get('ids'):
+        return HttpResponse('Missing parameters')
+    for item_id in request.POST.get('ids').split():
+        try:
+            item = Item.objects.filter(id=item_id).all()[0]
+        except:
+            continue
         item.archived = True
         item.save()
     return HttpResponse('OK')
