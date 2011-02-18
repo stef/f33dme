@@ -53,7 +53,7 @@ def search(request):
 def add_feed(request):
     if request.method == 'POST':
         form = FeedForm(data=request.POST)
-        if form.is_valid():
+        if form.is_valid() and not Feed.objects.filter(url=form.cleaned_data['url']).all():
             event = form.save()
             return HttpResponse('OK')
             #return HttpResponseRedirect("%s" % post.get_nice_url())
