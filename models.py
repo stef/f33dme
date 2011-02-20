@@ -35,7 +35,7 @@ class Item(models.Model):
     title = models.CharField(max_length=4096)
     content = models.TextField()
     url = models.URLField()
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField()
     added = models.DateTimeField(auto_now_add=True)
     feed = models.ForeignKey(Feed)
     score = models.FloatField(default=0.0)
