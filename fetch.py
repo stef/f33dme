@@ -33,7 +33,7 @@ def fetchFeed(feed):
     f = parse(feed.url)
     if not f:
         print '[!] cannot parse %s - %s' % (feed.name, feed.url)
-        continue
+        return
     print '[!] parsing %s - %s' % (feed.name, feed.url)
     d = feed.updated
     for item in reversed(f['entries']):
