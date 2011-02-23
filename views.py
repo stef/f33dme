@@ -35,7 +35,8 @@ def _main_view(request, iall, template_vars={}):
         items = pag.page(1)
     form = FeedForm()
     item_ids = ' '.join([item.id.__str__() for item in items.object_list])
-    tpl_dict = {'items': items, 'form': form, 'item_num': item_num, 'page_num': page, 'item_ids': item_ids}
+    feeds = Feed.objects.filter(item__archived = False).distinct().all()
+    tpl_dict = {'items': items, 'form': form, 'item_num': item_num, 'page_num': page, 'item_ids': item_ids, 'feeds': feeds}
     tpl_dict.update(template_vars)
     return render_to_response('index.html', tpl_dict)
 
@@ -71,7 +72,8 @@ def archive(request, item_id):
     return HttpResponse('OK')
 
 def feeds(request):
-    return render_to_response('feeds.html')
+    feeds = Feed.objects.all()
+    return render_to_response('feeds.html', {'feeds': feeds})
 
 def bulk_archive(request):
     if not request.POST.get('ids'):

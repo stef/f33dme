@@ -30,6 +30,9 @@ class Feed(models.Model):
     
     def item_number(self):
         return len(self.item_set.all())
+    
+    def unread_item_number(self):
+        return len(self.item_set.filter(archived=False).all())
    
 class Item(models.Model):
     title = models.CharField(max_length=4096)
