@@ -1,5 +1,37 @@
 {% extends "base.html" %}
 {% load f33dme %}
+{% block scripts %}
+<script type="text/javascript">
+
+$(document).ready(function(){
+    $('#add_feed_link').click(function() {
+        $('#feeddiv').toggle('slow');
+        return false;
+    });
+    $('#add_feed').submit(function() {
+        $.post( 
+         "{% root_url %}/add_feed", 
+            $("#add_feed").serialize(), 
+            function(data){ 
+                ; 
+             } 
+         );  
+        return false;
+    });
+    $('#search_input').focus(function() {
+        if($(this).attr('value')  == '//Search'){
+            $(this).attr('value', '');
+        }
+    });
+});
+</script>
+{% endblock %}
 {% block content %}
-    <h2>Feed list</h2>
+<h2>Feed list</h2>
+<table>
+    <tr><th>Name</th><th>Items</th><th>URL</th><th>Modify</th><th>Delete</th></tr>
+    {% for feed in feeds %}
+    <tr><td>{{ feed.name }}</td><td>{{ feed.item_number }}({{ feed.unread_item_number}})</td><td><a href="{{ feed.url }}" title="{{ feed.url }}">{{ feed.url }}</a></td><td class="center">x</td><td class="center">x</td></tr>
+    {% endfor %}
+</table>
 {% endblock %}

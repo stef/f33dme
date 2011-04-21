@@ -23,7 +23,7 @@ LANG='en_US'
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-PAGING = 10
+PAGING = 100
 
 DEV_SERVER = True
 if globals().has_key('WSGI'):

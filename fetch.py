@@ -28,35 +28,44 @@ from f33dme.models import Item, Feed
 from feedparser import parse
 from datetime import datetime
 
-if __name__ == '__main__':
-    feeds = Feed.objects.all()
+def fetchFeed(feed):
     counter = 0
-    for feed in feeds:
-        f = parse(feed.url)
-        if not f:
-            print '[!] cannot parse %s - %s' % (feed.name, feed.url)
+    f = parse(feed.url)
+    if not f:
+        print '[!] cannot parse %s - %s' % (feed.name, feed.url)
+        return
+    print '[!] parsing %s - %s' % (feed.name, feed.url)
+    d = feed.updated
+    for item in reversed(f['entries']):
+        try:
+            tmp_date = datetime(*item['updated_parsed'][:6])
+        except:
+            tmp_date = datetime.now()
+        # title content updated
+        try:
+            c = unicode(''.join([x.value for x in item.content]))
+        except:
+            if item.has_key('media_text'):
+                c = unicode(item['media_text'])
+            elif item.has_key('summary'):
+                c = unicode(item['summary'])
+            else:
+                print '[!] no content found in %s(%s) - %s' % (feed.name, feed.url, unicode(item['title']))
+                c = u'Not found any content, plz check the feed and fix me =)'
+        t = unicode(item['title'])
+        u = item['links'][0]['href']
+        if feed.item_set.filter(title=t).filter(content=c).all():
             continue
-        print '[!] parsing %s - %s' % (feed.name, feed.url)
-        d = feed.updated
-        for item in reversed(f['entries']):
-            # title content updated
-            try:
-                c = unicode(item.content[0].value)
-            except:
-                if item.has_key('media_text'):
-                    c = unicode(item['media_text'])
-                elif item.has_key('summary'):
-                    c = unicode(item['summary'])
-                else:
-                    c = u'Not found any content, plz check the feed and fix me =)'
-            t = unicode(item['title'])
-            u = item['links'][0]['href']
-            if feed.item_set.filter(title=t).all():
-                continue
-            # date as tmp_date?!
-            new_item = Item(url=u, title=t, content=c, feed=feed)
-            new_item.save()
-            counter += 1
-        feed.updated = d
-        feed.save()
+        # date as tmp_date?!
+        new_item = Item(url=u, title=t, content=c, feed=feed, date=tmp_date)
+        new_item.save()
+        counter += 1
+    feed.updated = d
+    feed.save()
+    return counter
+
+if __name__ == '__main__':
+    counter = 0
+    for feed in Feed.objects.all():
+        counter += fetchFeed(feed)
     print '[!] %d item added' % counter

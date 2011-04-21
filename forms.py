@@ -27,7 +27,6 @@ class BaseForm(forms.Form):
 class FeedForm(BaseForm):
     name = forms.CharField(label=u'Name', max_length=4096, required=True)
     url = forms.CharField(label=u'URL', required=True)
-    tags = forms.CharField(label=u'Tags', max_length=4096, required=False)
 
     def save(self):
         new = Feed.objects.create(url = self.cleaned_data['url'],

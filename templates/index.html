@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% load f33dme %}
 {% block scripts %}
-<script type="text/javascript" src="{% media_url %}/js/jquery-1.4.4.min.js"></script>
 <script type="text/javascript">
 
 $(document).ready(function(){
@@ -92,4 +91,12 @@ $(document).ready(function(){
 {% endblock %}
 {% block left %}
 <h1><a href="{% root_url %}/feeds" title="feed list">Feeds</a></h1>
+{% if feeds %}
+<table>
+    <tr><th>Name</th><th>Items</th></tr>
+    {% for feed in feeds %}
+    <tr><td><a href="{{ feed.url }}" title="show only this feed">{{ feed.name }}</a></td><td>{{ feed.item_number }}({{ feed.unread_item_number}})</td></tr>
+    {% endfor %}
+</table>
+{% endif %}
 {% endblock %}
