@@ -20,7 +20,7 @@
 
 import sys, os
 
-sys.path.append('../')
+sys.path.append('/home/stf/')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'f33dme.settings'
 
 from django.conf import settings
@@ -34,7 +34,7 @@ def fetchFeed(feed):
     if not f:
         print '[!] cannot parse %s - %s' % (feed.name, feed.url)
         return
-    print '[!] parsing %s - %s' % (feed.name, feed.url)
+    #print '[!] parsing %s - %s' % (feed.name, feed.url)
     d = feed.updated
     for item in reversed(f['entries']):
         try:
@@ -50,11 +50,15 @@ def fetchFeed(feed):
             elif item.has_key('summary'):
                 c = unicode(item['summary'])
             else:
-                print '[!] no content found in %s(%s) - %s' % (feed.name, feed.url, unicode(item['title']))
+                #print '[!] no content found in %s(%s) - %s' % (feed.name, feed.url, unicode(item['title']))
                 c = u'Not found any content, plz check the feed and fix me =)'
         t = unicode(item['title'])
-        u = item['links'][0]['href']
-        if feed.item_set.filter(title=t).filter(content=c).all():
+        try:
+           u = item['links'][0]['href']
+        except:
+           u = ''
+        #if feed.item_set.filter(title=t).filter(content=c).all():
+        if feed.item_set.filter(url=u).filter(feed=feed).all():
             continue
         # date as tmp_date?!
         new_item = Item(url=u, title=t, content=c, feed=feed, date=tmp_date)
