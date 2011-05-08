@@ -20,7 +20,7 @@
 
 import sys, os
 
-sys.path.append('/home/stf/')
+sys.path.append('/home/wipeover/misc/projects/f33dme')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'f33dme.settings'
 
 from django.conf import settings
@@ -51,7 +51,7 @@ def fetchFeed(feed):
                 c = unicode(item['summary'])
             else:
                 #print '[!] no content found in %s(%s) - %s' % (feed.name, feed.url, unicode(item['title']))
-                c = u'Not found any content, plz check the feed and fix me =)'
+                c = u'No content found, plz check the feed and fix me =)'
         t = unicode(item['title'])
         try:
            u = item['links'][0]['href']

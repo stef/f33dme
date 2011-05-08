@@ -32,7 +32,7 @@ def _main_view(request, iall, template_vars={}):
     try:
         items = pag.page(page)
     except (EmptyPage, InvalidPage):
-        items = pag.page(1)
+        return HttpResponse(0)
     form = FeedForm()
     item_ids = ' '.join([item.id.__str__() for item in items.object_list])
     feeds = Feed.objects.filter(item__archived = False).distinct().all()

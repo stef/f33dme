@@ -2,7 +2,6 @@
 {% load f33dme %}
 {% block scripts %}
 <script type="text/javascript">
-
 $(document).ready(function(){
     $('#add_feed_link').click(function() {
         $('#feeddiv').toggle('slow');
@@ -60,6 +59,7 @@ $(document).ready(function(){
     </div>
    </div>
    <h2>Latest {% if not msg %}unread {%endif%}items ({{ item_num }})</h2>
+<div id="feeds">
     {% for item in items.object_list %}
     <div class="entry">
             <div class="right right_float"><a href="{% root_url %}/archive/{{ item.id }}" class="archive" title="Archive">Archive</a></div>
@@ -70,13 +70,14 @@ $(document).ready(function(){
             <div class="item_footer"><code>[{% if item.archived %}archived{% else %}unread{% endif %}]</code></div>
         </div>
         {% endfor %}
+</div>
     <div class="pagination right">
     {% if item_num %}
         <a href="{% root_url %}/bulk_archive" title="Archive page" id="archive_all">Archive page</a>
     {% endif %}
     <span class="step-links">
         {% if items.has_previous %}
-            <a href="?page={{ items.previous_page_number }}">&lt;&lt; previous</a>
+            <a href="{% root_url %}/?page={{ items.previous_page_number }}" class="prev_page">&lt;&lt; previous</a>
         {% endif %}
 
         <span class="current">
@@ -84,7 +85,7 @@ $(document).ready(function(){
         </span>
 
         {% if items.has_next %}
-            <a href="?page={{ items.next_page_number }}">next &gt;&gt;</a>
+            <a href="{% root_url %}/?page={{ items.next_page_number }}" class="next_page">next &gt;&gt;</a>
         {% endif %}
     </span>
 </div>
