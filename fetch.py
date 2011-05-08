@@ -20,7 +20,7 @@
 
 import sys, os
 
-sys.path.append('/home/wipeover/misc/projects/f33dme')
+sys.path.append(os.path.abspath(os.path.dirname(sys.argv[0])+'/../'))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'f33dme.settings'
 
 from django.conf import settings
