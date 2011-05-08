@@ -9,13 +9,13 @@ $(document).ready(function(){
         return false;
     });
     $('#add_feed').submit(function() {
-        $.post( 
-         "{% root_url %}/add_feed", 
-            $("#add_feed").serialize(), 
-            function(data){ 
-                ; 
-             } 
-         );  
+        $.post(
+         "{% root_url %}/add_feed",
+            $("#add_feed").serialize(),
+            function(data){
+                ;
+             }
+         );
         return false;
     });
     $('#search_input').focus(function() {
@@ -23,6 +23,17 @@ $(document).ready(function(){
             $(this).attr('value', '');
         }
     });
+    $('.del_link').click(function() {
+        var post_id = $(this).attr('id');
+        $.post(
+         "{% root_url %}/remove_feed",
+         {id: post_id},
+            function(data){
+                ;
+             }
+            );
+        return false;
+        });
 });
 </script>
 {% endblock %}
@@ -31,7 +42,7 @@ $(document).ready(function(){
 <table>
     <tr><th>Name</th><th>Items</th><th>URL</th><th>Modify</th><th>Delete</th></tr>
     {% for feed in feeds %}
-    <tr><td>{{ feed.name }}</td><td>{{ feed.item_number }}({{ feed.unread_item_number}})</td><td><a href="{{ feed.url }}" title="{{ feed.url }}">{{ feed.url }}</a></td><td class="center">x</td><td class="center">x</td></tr>
+    <tr><td>{{ feed.name }}</td><td>{{ feed.item_number }}({{ feed.unread_item_number}})</td><td><a href="{{ feed.url }}" title="{{ feed.url }}">{{ feed.url }}</a></td><td class="center">x</td><td class="center"><a id="{{ feed.id }}" href="#" class="del_link">x</a></td></tr>
     {% endfor %}
 </table>
 {% endblock %}

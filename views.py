@@ -63,6 +63,14 @@ def add_feed(request):
         form = FeedForm()
     return HttpResponse('0')
 
+def remove_feed(request):
+    if request.method == 'POST' and request.POST.get('id'):
+        feed = Feed.objects.filter(id=request.POST.get('id'))
+        if feed:
+            feed.delete()
+            return HttpResponse('0')
+    return HttpResponse('1')
+
 def archive(request, item_id):
     item = Item.objects.get(id=item_id)
     if not item:
