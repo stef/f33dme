@@ -18,13 +18,15 @@ $(document).ready(function(){
                 archiving.push($(e).attr('class').split(' ')[1]);
                 $(e).addClass('archived');
             });
-            $.post( 
-                '{% root_url %}/bulk_archive',
-                {ids: archiving.join(' ')} ,
-                function(data){
-                    return true;
-                }
-            );
+            if(archiving.length) {
+                $.post(
+                    '{% root_url %}/bulk_archive',
+                    {ids: archiving.join(' ')},
+                    function(data){
+                        return true;
+                    }
+                );
+            }
         },
         debug : false,
         donetext     : "I think we've hit the end, Jim" ,
@@ -48,13 +50,15 @@ $(document).ready(function(){
         console.log('archiving: ', archiving);
         console.log('archiving_len: ', archiving.length);
         //{ids: '1921 1920 1919 1918 1917 1916 1927 1932 1926 1924'}
-        $.post( 
-            '{% root_url %}/bulk_archive',
-            {ids: archiving.join(' ')} ,
-            function(data){
-                return true;
-            }
-        );
+        if(archiving.length) {
+            $.post(
+                '{% root_url %}/bulk_archive',
+                {ids: archiving.join(' ')} ,
+                function(data){
+                    return true;
+                }
+            );
+        }
     });
 {% endif %}
     $('#add_feed_link').click(function() {
@@ -115,7 +119,7 @@ $(document).ready(function(){
    <h2>Latest {% if not msg %}unread {%endif%}items ({{ item_num }})</h2>
 <div id="feeds">
     {% for item in items.object_list %}
-    <div class="entry {{ item.id }}">
+    <div class="entry {{ item.id }}{% if item.archived %} archived{% endif %}">
             <div class="right right_float"><a href="{% root_url %}/archive/{{ item.id }}" class="archive" title="Archive">Archive</a></div>
             <div class="right right_float"><a href="{% root_url %}/feed/{{ item.feed.id }}" title="show only this feed">{{ item.feed.name }}</a></div>
             <h3><a href="{{ item.url }}">{{ item.title }}</a></h3>
