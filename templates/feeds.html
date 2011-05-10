@@ -40,9 +40,9 @@ $(document).ready(function(){
 {% block content %}
 <h2>Feed list</h2>
 <table>
-    <tr><th>Name</th><th>Items</th><th>URL</th><th>Modify</th><th>Delete</th></tr>
+    <tr><th>Name</th><th>Items</th><th>Modify</th><th>Delete</th><th>URL</th></tr>
     {% for feed in feeds %}
-    <tr><td>{{ feed.name }}</td><td>{{ feed.item_number }}({{ feed.unread_item_number}})</td><td><a href="{{ feed.url }}" title="{{ feed.url }}">{{ feed.url }}</a></td><td class="center">x</td><td class="center"><a id="{{ feed.id }}" href="#" class="del_link">x</a></td></tr>
+    <tr><td><a href="{% root_url%}/feed/{{ feed.id }}">{{ feed.name }}</a></td><td>{{ feed.item_number }}({{ feed.unread_item_number}})</td><td class="center">x</td><td class="center"><a id="{{ feed.id }}" href="#" class="del_link">x</a></td><td><a href="{{ feed.url }}" title="{{ feed.url }}">{{ feed.url }}</a></td></tr>
     {% endfor %}
 </table>
 {% endblock %}
