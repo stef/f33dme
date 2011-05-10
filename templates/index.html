@@ -1,8 +1,62 @@
 {% extends "base.html" %}
 {% load f33dme %}
 {% block scripts %}
+{% if is_inf_scroll %}
+<script type="text/javascript" src="{% media_url %}/js/jquery.infinitescroll.min.js"></script>
+{% endif %}
 <script type="text/javascript">
 $(document).ready(function(){
+{% if is_inf_scroll %}
+    $('#feeds').infinitescroll({
+
+        navSelector : ".pagination",
+        nextSelector : ".next_page",
+        itemSelector : ".entry",
+        errorCallback: function(){
+            var archiving = new Array();
+            $('.entry').not('.archived').each(function(i, e) {
+                archiving.push($(e).attr('class').split(' ')[1]);
+                $(e).addClass('archived');
+            });
+            $.post( 
+                '{% root_url %}/bulk_archive',
+                {ids: archiving.join(' ')} ,
+                function(data){
+                    return true;
+                }
+            );
+        },
+        debug : false,
+        donetext     : "I think we've hit the end, Jim" ,
+        dataType : 'html',
+        // appendCallback : false, // USE FOR PREPENDING
+        // pathParse : function( pathStr, nextPage ){ return pathStr.replace('2', nextPage ); }
+    }, function(newElements){
+        //USE FOR PREPENDING
+        // $(newElements).css('background-color','#ffef00');
+        // $(this).prepend(newElements);
+        //
+        //END OF PREPENDING
+        window.console && console.log('context: ',this);
+        window.console && console.log('returned: ', newElements);
+        console.log('len: ', $('.entry').length);
+        var archiving = new Array();
+        $('.entry').not('.archived').slice(0, -newElements.length).each(function(i, e) {
+            archiving.push($(e).attr('class').split(' ')[1]);
+            $(e).addClass('archived');
+        });
+        console.log('archiving: ', archiving);
+        console.log('archiving_len: ', archiving.length);
+        //{ids: '1921 1920 1919 1918 1917 1916 1927 1932 1926 1924'}
+        $.post( 
+            '{% root_url %}/bulk_archive',
+            {ids: archiving.join(' ')} ,
+            function(data){
+                return true;
+            }
+        );
+    });
+{% endif %}
     $('#add_feed_link').click(function() {
         $('#feeddiv').toggle('slow');
         return false;
@@ -14,7 +68,7 @@ $(document).ready(function(){
             function(data){ 
                 ; 
              } 
-         );  
+        );
         return false;
     });
     $('.archive').click(function() {
@@ -51,7 +105,7 @@ $(document).ready(function(){
 {% endblock %}
 {% block content %}
 <div id="feeddiv" class="hidden border half"><h4>Add new feed</h4>
-    <div >
+    <div>
         <form action="{% root_url %}/add_feed" method="post" name="add_feed" id="add_feed">
         {{ form.as_div }}
         <div class="form-row"><input type="submit" value="ookay" /></div>
@@ -61,7 +115,7 @@ $(document).ready(function(){
    <h2>Latest {% if not msg %}unread {%endif%}items ({{ item_num }})</h2>
 <div id="feeds">
     {% for item in items.object_list %}
-    <div class="entry">
+    <div class="entry {{ item.id }}">
             <div class="right right_float"><a href="{% root_url %}/archive/{{ item.id }}" class="archive" title="Archive">Archive</a></div>
             <div class="right right_float"><a href="{% root_url %}/feed/{{ item.feed.id }}" title="show only this feed">{{ item.feed.name }}</a></div>
             <h3><a href="{{ item.url }}">{{ item.title }}</a></h3>
@@ -77,15 +131,15 @@ $(document).ready(function(){
     {% endif %}
     <span class="step-links">
         {% if items.has_previous %}
-            <a href="{% root_url %}/?page={{ items.previous_page_number }}" class="prev_page">&lt;&lt; previous</a>
+            <a href="?page={{ items.previous_page_number }}" class="prev_page">&lt;&lt; previous</a>
         {% endif %}
 
         <span class="current">
-            Page {{ items.number }} of {{ items.paginator.num_pages }}.
+            <a href="{{ page_url }}" class="page_url">Page {{ items.number }} of {{ items.paginator.num_pages }}.</a>
         </span>
 
         {% if items.has_next %}
-            <a href="{% root_url %}/?page={{ items.next_page_number }}" class="next_page">next &gt;&gt;</a>
+            <a href="?page={{ items.next_page_number }}" class="next_page">next &gt;&gt;</a>
         {% endif %}
     </span>
 </div>

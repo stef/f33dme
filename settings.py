@@ -17,13 +17,20 @@
 
 import os.path
 
+# !! F33DME settings START !! #
+
+# INT > 0
+PAGING = 100
+# True / False
+INFINITE_SCROLL = False
+
+# !! F33DME settings END   !! #
+
 BASE_PATH = os.path.dirname(__file__)
 LANG='en_US'
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-
-PAGING = 100
 
 DEV_SERVER = True
 if globals().has_key('WSGI'):

@@ -29,6 +29,8 @@ def _main_view(request, iall, template_vars={}):
     item_num = len(iall)
     pag = Paginator(iall, paging)
     page = int(request.GET.get('page', '1'))
+    if request.is_ajax() and page > 2 and settings.INFINITE_SCROLL:
+        page = 2
     try:
         items = pag.page(page)
     except (EmptyPage, InvalidPage):
@@ -36,7 +38,7 @@ def _main_view(request, iall, template_vars={}):
     form = FeedForm()
     item_ids = ' '.join([item.id.__str__() for item in items.object_list])
     feeds = Feed.objects.filter(item__archived = False).distinct().all()
-    tpl_dict = {'items': items, 'form': form, 'item_num': item_num, 'page_num': page, 'item_ids': item_ids, 'feeds': feeds}
+    tpl_dict = {'items': items, 'form': form, 'item_num': item_num, 'page_num': page, 'item_ids': item_ids, 'feeds': feeds, 'is_inf_scroll': settings.INFINITE_SCROLL}
     tpl_dict.update(template_vars)
     return render_to_response('index.html', tpl_dict)
 

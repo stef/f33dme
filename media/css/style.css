@@ -21,6 +21,8 @@ div#calendar { float: right; margin-right: 40px; width: 60%; }
 .hidden { display: none; }
 .center { text-align: center; }
 
+.archived { background: #222222; color: grey; }
+
 a { color: #FF0066; text-decoration: none; }
 a:hover { text-decoration: underline; }
 
