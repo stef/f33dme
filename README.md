@@ -1,7 +1,7 @@
 f33dme
 ======
 
-LINCENSE:
+LICENSE:
 ---------
 
 f33dme is free software: you can redistribute it and/or modify
