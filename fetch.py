@@ -49,6 +49,10 @@ def fetchFeed(feed):
                 c = unicode(item['media_text'])
             elif item.has_key('summary'):
                 c = unicode(item['summary'])
+            elif item.has_key('description'):
+                c = unicode(item['description'])
+            elif item.has_key('media:description'):
+                c = unicode(item['media:description'])
             else:
                 #print '[!] no content found in %s(%s) - %s' % (feed.name, feed.url, unicode(item['title']))
                 c = u'No content found, plz check the feed and fix me =)'
