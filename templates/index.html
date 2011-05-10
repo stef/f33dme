@@ -119,9 +119,9 @@ $(document).ready(function(){
             <div class="right right_float"><a href="{% root_url %}/archive/{{ item.id }}" class="archive" title="Archive">Archive</a></div>
             <div class="right right_float"><a href="{% root_url %}/feed/{{ item.feed.id }}" title="show only this feed">{{ item.feed.name }}</a></div>
             <h3><a href="{{ item.url }}">{{ item.title }}</a></h3>
-            <div class="item"><code>{{ item.content|safe }}</code></div>
+            <div class="item">{{ item.content|safe }}</div>
             <div class="right right_float">{{ item.date|date:"Y.m.d H:i:s" }}</div>
-            <div class="item_footer"><code>[{% if item.archived %}archived{% else %}unread{% endif %}]</code></div>
+            <div class="item_footer">[{% if item.archived %}archived{% else %}unread{% endif %}]</div>
         </div>
         {% endfor %}
 </div>
