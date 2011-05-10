@@ -23,10 +23,10 @@ DEPENDENCIES:
 -------------
 
 - python django - www.djangoproject.com/
- - python opml - http://pypi.python.org/pypi/opml/0.5
- - python feedparser - http://www.feedparser.org/
- - jquery - http://jquery.com/
- - jquery infinite scroll - http://www.infinite-scroll.com/infinite-scroll-jquery-plugin/ ; https://github.com/paulirish/infinite-scroll
+- python opml - http://pypi.python.org/pypi/opml/0.5
+- python feedparser - http://www.feedparser.org/
+- jquery - http://jquery.com/
+- jquery infinite scroll - http://www.infinite-scroll.com/infinite-scroll-jquery-plugin/ ; https://github.com/paulirish/infinite-scroll
 
 INSTALL:
 --------
@@ -43,7 +43,7 @@ FEATURES:
 ---------
 
 - Archive/bulk archive
- - Infinite scroll with auto archive
- - Search
- - OPML import
- - Feed management
+- Infinite scroll with auto archive
+- Search
+- OPML import
+- Feed management
