@@ -32,12 +32,13 @@ INSTALL:
 --------
 
 1. Install dependencies
-2. Create a directory and chekout this repository to it
-3. Go to the directory
+2. Create a directory and check out this repository to it
+3. Go to the checked out directory
 4. Move downloaded jquery.js to `media/js/jquery.min.js` - if infinite scroll enabled copy it to `media/js/jquery.infinitescroll.min.js`
-4. Edit `settings.py` or `local_settings.py` - DATABASE_* settings are required
-5. Run the software: `python ./manage.py runserver url:port`
-6. Visit http://url:port/
+5. Edit `settings.py` or `local_settings.py` - DATABASE_* settings are required
+6. Run `./manage.py syncdb`
+7. Run the software: `python ./manage.py runserver url:port`
+8. Visit http://url:port/
 
 FEATURES:
 ---------
