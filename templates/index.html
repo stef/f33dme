@@ -41,14 +41,14 @@ $(document).ready(function(){
         //END OF PREPENDING
         window.console && console.log('context: ',this);
         window.console && console.log('returned: ', newElements);
-        console.log('len: ', $('.entry').length);
+        window.console && console.log('len: ', $('.entry').length);
         var archiving = new Array();
         $('.entry').not('.archived').slice(0, -newElements.length).each(function(i, e) {
             archiving.push($(e).attr('class').split(' ')[1]);
             $(e).addClass('archived');
         });
-        console.log('archiving: ', archiving);
-        console.log('archiving_len: ', archiving.length);
+        window.console && console.log('archiving: ', archiving);
+        window.console && console.log('archiving_len: ', archiving.length);
         //{ids: '1921 1920 1919 1918 1917 1916 1927 1932 1926 1924'}
         if(archiving.length) {
             $.post(
