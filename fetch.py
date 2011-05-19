@@ -27,6 +27,7 @@ from django.conf import settings
 from f33dme.models import Item, Feed
 from feedparser import parse
 from datetime import datetime
+from itertools import imap
 
 def fetchFeed(feed):
     counter = 0
@@ -67,7 +68,5 @@ def fetchFeed(feed):
     return counter
 
 if __name__ == '__main__':
-    counter = 0
-    for feed in Feed.objects.all():
-        counter += fetchFeed(feed)
+    counter = sum(imap(fetchFeed, Feed.objects.all()))
     print '[!] %d item added' % counter
