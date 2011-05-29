@@ -31,11 +31,15 @@ from itertools import imap
 
 def fetchFeed(feed):
     counter = 0
-    f = parse(feed.url)
+    f = parse(feed.url, etag=feed.etag)
     if not f:
         print '[!] cannot parse %s - %s' % (feed.name, feed.url)
         return
     #print '[!] parsing %s - %s' % (feed.name, feed.url)
+    try:
+        feed.etag = f.etag
+    except AttributeError:
+        pass
     d = feed.updated
     for item in reversed(f['entries']):
         try:
