@@ -31,13 +31,18 @@ from itertools import imap
 
 def fetchFeed(feed):
     counter = 0
-    f = parse(feed.url, etag=feed.etag)
+    modified = feed.modified.timetuple() if feed.modified else None
+    f = parse(feed.url, etag=feed.etag, modified=modified)
     if not f:
         print '[!] cannot parse %s - %s' % (feed.name, feed.url)
         return
     #print '[!] parsing %s - %s' % (feed.name, feed.url)
     try:
         feed.etag = f.etag
+    except AttributeError:
+        pass
+    try:
+        feed.modified = datetime(*f.modified[:6])
     except AttributeError:
         pass
     d = feed.updated

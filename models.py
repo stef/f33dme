@@ -24,6 +24,7 @@ class Feed(models.Model):
     name = models.CharField(max_length=4096)
     etag = models.CharField(max_length=4096)
     updated = models.DateTimeField(default=datetime(1970, 1, 1))
+    modified = models.DateTimeField(default=None, null=True)
     score = models.FloatField(default=0.0)
 
     class Admin:
