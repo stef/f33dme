@@ -29,6 +29,8 @@ from feedparser import parse
 from datetime import datetime
 from itertools import imap
 from lxml.html.clean import Cleaner
+from lxml.html.soupparser import soupparse
+from lxml.etree import tostring
 from urlparse import urljoin, urlparse, urlunparse
 from itertools import ifilterfalse, imap
 import urllib
@@ -67,12 +69,12 @@ def fetchFeed(feed):
             tmp_date = datetime.now()
         # title content updated
         try:
-            c = cleaner.clean_html(unicode(''.join([x.value for x in item.content])))
+            c = cleaner.clean_html(tostring(soupparse(unicode(''.join([x.value for x in item.content])))))
         except:
             c = u'No content found, plz check the feed and fix me =)'
             for key in ['media_text', 'summary', 'description', 'media:description']:
                 if item.has_key(key):
-                    c = cleaner.clean_html(unicode(item[key]))
+                    c = cleaner.clean_html(tostring(soupparse(unicode(item[key]))))
                     break
         t = unicode(item['title'])
         try:
