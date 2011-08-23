@@ -18,7 +18,7 @@
 # (C) 2011- by Adam Tauber, <asciimoo@gmail.com>
 
 
-import sys, os
+import sys, os, re
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)+'/../'))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'f33dme.settings'
@@ -28,6 +28,20 @@ from f33dme.models import Item, Feed
 from feedparser import parse
 from datetime import datetime
 from itertools import imap
+from lxml.html.clean import Cleaner
+from urlparse import urljoin, urlparse, urlunparse
+from itertools import ifilterfalse, imap
+import urllib
+
+cleaner = Cleaner(host_whitelist=['www.youtube.com'])
+
+utmRe=re.compile('utm_(source|medium|campaign|content)=')
+def urlSanitize(url):
+    # removes annoying UTM params to urls.
+    pcs=urlparse(urllib.unquote_plus(url))
+    tmp=list(pcs)
+    tmp[4]='&'.join(ifilterfalse(utmRe.match, pcs.query.split('&')))
+    return urlunparse(tmp)
 
 def fetchFeed(feed):
     counter = 0
@@ -53,16 +67,16 @@ def fetchFeed(feed):
             tmp_date = datetime.now()
         # title content updated
         try:
-            c = unicode(''.join([x.value for x in item.content]))
+            c = cleaner.clean_html(unicode(''.join([x.value for x in item.content])))
         except:
             c = u'No content found, plz check the feed and fix me =)'
             for key in ['media_text', 'summary', 'description', 'media:description']:
                 if item.has_key(key):
-                    c = unicode(item[key])
+                    c = cleaner.clean_html(unicode(item[key]))
                     break
         t = unicode(item['title'])
         try:
-           u = item['links'][0]['href']
+           u = urlSanitize(item['links'][0]['href'])
         except:
            u = ''
         #if feed.item_set.filter(title=t).filter(content=c).all():
