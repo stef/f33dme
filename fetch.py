@@ -83,7 +83,7 @@ def fetchFeed(feed):
                 if item.has_key(key):
                     c = cleaner.clean_html(clean(unicode(item[key])))
                     break
-        t = unicode(item['title'])
+        t = unicode(item.get('title',''))
         try:
            u = urlSanitize(item['links'][0]['href'])
         except:
