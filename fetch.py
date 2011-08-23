@@ -29,11 +29,10 @@ from feedparser import parse
 from datetime import datetime
 from itertools import imap
 from lxml.html.clean import Cleaner
-from lxml.html.soupparser import soupparse
-from lxml.etree import tostring
 from urlparse import urljoin, urlparse, urlunparse
 from itertools import ifilterfalse, imap
 import urllib
+import tidy
 
 cleaner = Cleaner(host_whitelist=['www.youtube.com'])
 
@@ -44,6 +43,14 @@ def urlSanitize(url):
     tmp=list(pcs)
     tmp[4]='&'.join(ifilterfalse(utmRe.match, pcs.query.split('&')))
     return urlunparse(tmp)
+
+def clean(txt):
+    return unicode(str(tidy.parseString(txt, **{'output_xhtml' : 1,
+                                                'add_xml_decl' : 0,
+                                                'indent' : 0,
+                                                'tidy_mark' : 0,
+                                                'doctype' : "strict",
+                                                'wrap' : 0})),'utf8')
 
 def fetchFeed(feed):
     counter = 0
@@ -69,12 +76,12 @@ def fetchFeed(feed):
             tmp_date = datetime.now()
         # title content updated
         try:
-            c = cleaner.clean_html(tostring(soupparse(unicode(''.join([x.value for x in item.content])))))
+            c = cleaner.clean_html(clean(unicode(''.join([x.value for x in item.content]))))
         except:
             c = u'No content found, plz check the feed and fix me =)'
             for key in ['media_text', 'summary', 'description', 'media:description']:
                 if item.has_key(key):
-                    c = cleaner.clean_html(tostring(soupparse(unicode(item[key]))))
+                    c = cleaner.clean_html(clean(unicode(item[key])))
                     break
         t = unicode(item['title'])
         try:
