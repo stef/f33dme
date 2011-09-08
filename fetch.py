@@ -1,4 +1,5 @@
 #!/usr/bin/env python2.6
+# -*- coding: utf-8 -*-
 
 # This file is part of f33dme.
 #
@@ -92,7 +93,7 @@ def fetchFeed(feed):
         if feed.item_set.filter(url=u,title=t,content=c).count()>0:
             continue
         # date as tmp_date?!
-        new_item = Item(url=u, title=t, content=c, feed=feed, date=tmp_date)
+        new_item = Item(url=u, title=t, content=c, date=tmp_date)
         new_item.save()
         counter += 1
     feed.updated = d
