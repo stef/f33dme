@@ -29,13 +29,13 @@ class Feed(models.Model):
 
     class Admin:
         pass
-    
+
     def item_number(self):
         return len(self.item_set.all())
-    
+
     def unread_item_number(self):
         return len(self.item_set.filter(archived=False).all())
-   
+
 class Item(models.Model):
     title = models.CharField(max_length=4096)
     content = models.TextField()
@@ -46,19 +46,28 @@ class Item(models.Model):
     score = models.FloatField(default=0.0)
     archived = models.BooleanField(default=False)
 
-   
     def __unicode__(self):
         if len(self.title) < 300:
             return self.title
         else:
             return self.title[:300] + " [...]"
-   
+
     class Meta:
         ordering = ["-date"]
-   
+
     class Admin:
         pass
 
     def get_nice_url(self):
         return ("%s/%d/%s") % (settings.ROOT_URL, self.id, self.title)
-   
+
+class Tag(models.Model):
+    tag = models.CharField(max_length=4096)
+    scheme = models.CharField(max_length=4096, null=True)
+    items = models.ManyToManyField(Item)
+
+    class Admin:
+        pass
+
+    def __unicode__(self):
+        return self.tag
