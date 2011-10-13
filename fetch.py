@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.6
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # This file is part of f33dme.
@@ -25,20 +25,34 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__)+'/../'))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'f33dme.settings'
 
 from django.conf import settings
-from f33dme.models import Item, Feed
+from f33dme.models import Item, Feed, Tag
 from feedparser import parse
 from datetime import datetime
 from itertools import imap
 from lxml.html.clean import Cleaner
 from urlparse import urljoin, urlparse, urlunparse
 from itertools import ifilterfalse, imap
-import urllib
+import urllib, httplib
 import tidy
 
 cleaner = Cleaner(host_whitelist=['www.youtube.com'])
 
 utmRe=re.compile('utm_(source|medium|campaign|content)=')
 def urlSanitize(url):
+    # handle any redirected urls from the feed, like
+    # ('http://feedproxy.google.com/~r/Torrentfreak/~3/8UY1UySQe1k/')
+    us=httplib.urlsplit(url)
+    if us.scheme=='http':
+        conn = httplib.HTTPConnection("feedproxy.google.com")
+        req = url[7+len(us.netloc):]
+    elif us.scheme=='https':
+        conn = httplib.HTTPSConnection("feedproxy.google.com")
+        req = url[8+len(us.netloc):]
+    #conn.set_debuglevel(9)
+    conn.request("HEAD", req)
+    res = conn.getresponse()
+    if res.status in [301, 304]:
+        url = res.getheader('Location')
     # removes annoying UTM params to urls.
     pcs=urlparse(urllib.unquote_plus(url))
     tmp=list(pcs)
@@ -93,8 +107,13 @@ def fetchFeed(feed):
         if feed.item_set.filter(url=u,title=t,content=c).count()>0:
             continue
         # date as tmp_date?!
-        new_item = Item(url=u, title=t, content=c, date=tmp_date)
+        new_item = Item(url=u, title=t, content=c, feed=feed, date=tmp_date)
         new_item.save()
+        for tag in item.get('tags',[]):
+            if tag.get('term'):
+                tag=Tag.objects.get_or_create(tag=tag['term'], scheme=tag.get('scheme'))[0]
+                if not new_item in tag.items.all():
+                    tag.items.add(new_item)
         counter += 1
     feed.updated = d
     feed.save()
