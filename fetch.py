@@ -43,10 +43,10 @@ def urlSanitize(url):
     # ('http://feedproxy.google.com/~r/Torrentfreak/~3/8UY1UySQe1k/')
     us=httplib.urlsplit(url)
     if us.scheme=='http':
-        conn = httplib.HTTPConnection("feedproxy.google.com")
+        conn = httplib.HTTPConnection(us.netloc)
         req = url[7+len(us.netloc):]
     elif us.scheme=='https':
-        conn = httplib.HTTPSConnection("feedproxy.google.com")
+        conn = httplib.HTTPSConnection(us.netloc)
         req = url[8+len(us.netloc):]
     #conn.set_debuglevel(9)
     conn.request("HEAD", req)
