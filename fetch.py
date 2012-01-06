@@ -21,7 +21,7 @@
 
 import sys, os, re
 
-sys.path.append(os.path.abspath(os.path.dirname(__file__)+'/../'))
+sys.path.append('/home/stf/')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'f33dme.settings'
 
 from django.conf import settings
@@ -68,13 +68,13 @@ def clean(txt):
                                                 'wrap' : 0})),'utf8')
 
 def fetchFeed(feed):
+    #print '[!] parsing %s - %s' % (feed.name, feed.url)
     counter = 0
     modified = feed.modified.timetuple() if feed.modified else None
     f = parse(feed.url, etag=feed.etag, modified=modified)
     if not f:
-        print '[!] cannot parse %s - %s' % (feed.name, feed.url)
+        print >>sys.stderr, '[!] cannot parse %s - %s' % (feed.name, feed.url)
         return
-    #print '[!] parsing %s - %s' % (feed.name, feed.url)
     try:
         feed.etag = f.etag
     except AttributeError:
@@ -86,9 +86,17 @@ def fetchFeed(feed):
     d = feed.updated
     for item in reversed(f['entries']):
         try:
+           u = urlSanitize(item['links'][0]['href'])
+        except:
+           u = ''
+        if feed.item_set.filter(url=u).all():
+            continue
+
+        try:
             tmp_date = datetime(*item['updated_parsed'][:6])
         except:
             tmp_date = datetime.now()
+
         # title content updated
         try:
             c = cleaner.clean_html(clean(unicode(''.join([x.value for x in item.content]))))
@@ -96,7 +104,11 @@ def fetchFeed(feed):
             c = u'No content found, plz check the feed and fix me =)'
             for key in ['media_text', 'summary', 'description', 'media:description']:
                 if item.has_key(key):
-                    c = cleaner.clean_html(clean(unicode(item[key])))
+                    try:
+                        c = cleaner.clean_html(clean(unicode(item[key])))
+                    except:
+                        print u
+                        print clean(unicode(item.get(key)))
                     break
         t = unicode(item.get('title',''))
         try:
