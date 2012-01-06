@@ -29,7 +29,10 @@ from f33dme.models import Item, Feed, Tag
 from feedparser import parse
 from datetime import datetime
 from itertools import imap
+from cStringIO import StringIO
 from lxml.html.clean import Cleaner
+from lxml.html.soupparser import parse as xmlparse
+from lxml.etree import tostring
 from urlparse import urljoin, urlparse, urlunparse
 from itertools import ifilterfalse, imap
 import urllib, httplib
@@ -49,6 +52,7 @@ def urlSanitize(url):
         conn = httplib.HTTPSConnection(us.netloc)
         req = url[8+len(us.netloc):]
     #conn.set_debuglevel(9)
+    conn.putheader('User-Agent','Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)')
     conn.request("HEAD", req)
     res = conn.getresponse()
     if res.status in [301, 304]:
@@ -60,12 +64,13 @@ def urlSanitize(url):
     return urlunparse(tmp)
 
 def clean(txt):
-    return unicode(str(tidy.parseString(txt, **{'output_xhtml' : 1,
-                                                'add_xml_decl' : 0,
-                                                'indent' : 0,
-                                                'tidy_mark' : 0,
-                                                'doctype' : "strict",
-                                                'wrap' : 0})),'utf8')
+    return tostring(xmlparse(StringIO(unicode(str(tidy.parseString(txt, **{'output_xhtml' : 1,
+                                                                  'add_xml_decl' : 0,
+                                                                  'indent' : 0,
+                                                                  'anchor-as-name': 0,
+                                                                  'tidy_mark' : 0,
+                                                                  'doctype' : "strict",
+                                                                  'wrap' : 0})),'utf8'))))
 
 def fetchFeed(feed):
     counter = 0
