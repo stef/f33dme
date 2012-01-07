@@ -111,12 +111,8 @@ def fetchFeed(feed):
                         print clean(unicode(item.get(key)))
                     break
         t = unicode(item.get('title',''))
-        try:
-           u = urlSanitize(item['links'][0]['href'])
-        except:
-           u = ''
         #if feed.item_set.filter(title=t).filter(content=c).all():
-        if feed.item_set.filter(url=u,title=t,content=c).count()>0:
+        if feed.item_set.filter(title=t,content=c).count()>0:
             continue
         # date as tmp_date?!
         new_item = Item(url=u, title=t, content=c, feed=feed, date=tmp_date)
