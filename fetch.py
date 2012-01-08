@@ -47,13 +47,13 @@ def urlSanitize(url):
     us=httplib.urlsplit(url)
     if us.scheme=='http':
         conn = httplib.HTTPConnection(us.netloc)
-        req = url[7+len(us.netloc):]
+        req = urllib.quote(url[7+len(us.netloc):])
     elif us.scheme=='https':
         conn = httplib.HTTPSConnection(us.netloc)
-        req = url[8+len(us.netloc):]
+        req = urllib.quote(url[8+len(us.netloc):])
     #conn.set_debuglevel(9)
-    conn.putheader('User-Agent','Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)')
-    conn.request("HEAD", req)
+    headers={'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'}
+    conn.request("HEAD", req,None,headers)
     res = conn.getresponse()
     if res.status in [301, 304]:
         url = res.getheader('Location')
@@ -64,13 +64,13 @@ def urlSanitize(url):
     return urlunparse(tmp)
 
 def clean(txt):
-    return tostring(xmlparse(StringIO(unicode(str(tidy.parseString(txt, **{'output_xhtml' : 1,
+    return tostring(xmlparse(StringIO(str(tidy.parseString(txt, **{'output_xhtml' : 1,
                                                                   'add_xml_decl' : 0,
                                                                   'indent' : 0,
                                                                   'anchor-as-name': 0,
                                                                   'tidy_mark' : 0,
                                                                   'doctype' : "strict",
-                                                                  'wrap' : 0})),'utf8'))))
+                                                                  'wrap' : 0})))))
 
 def fetchFeed(feed):
     #print '[!] parsing %s - %s' % (feed.name, feed.url)
@@ -93,6 +93,7 @@ def fetchFeed(feed):
         try:
            u = urlSanitize(item['links'][0]['href'])
         except:
+           print >>sys.stderr, "[!] couldn't sanitize url", item['links'][0]['href']
            u = ''
         if feed.item_set.filter(url=u).all():
             continue
@@ -118,6 +119,8 @@ def fetchFeed(feed):
         t = unicode(item.get('title',''))
         #if feed.item_set.filter(title=t).filter(content=c).all():
         if feed.item_set.filter(title=t,content=c).count()>0:
+        #if feed.item_set.filter(title=t,content=c).count()>0:
+        #if feed.item_set.filter(title=t).filter(content=c).count()>0:
             continue
         # date as tmp_date?!
         new_item = Item(url=u, title=t, content=c, feed=feed, date=tmp_date)
