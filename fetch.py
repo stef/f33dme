@@ -35,7 +35,7 @@ from lxml.html.soupparser import parse as xmlparse
 from lxml.etree import tostring
 from urlparse import urljoin, urlparse, urlunparse
 from itertools import ifilterfalse, imap
-import urllib, httplib
+import urllib, httplib, traceback
 import tidy
 
 cleaner = Cleaner(host_whitelist=['www.youtube.com'])
@@ -46,7 +46,7 @@ def urlSanitize(url):
     # ('http://feedproxy.google.com/~r/Torrentfreak/~3/8UY1UySQe1k/')
     us=httplib.urlsplit(url)
     if us.scheme=='http':
-        conn = httplib.HTTPConnection(us.netloc)
+        conn = httplib.HTTPConnection(us.netloc, timeout=3)
         req = urllib.quote(url[7+len(us.netloc):])
     elif us.scheme=='https':
         conn = httplib.HTTPSConnection(us.netloc)
@@ -55,6 +55,7 @@ def urlSanitize(url):
     headers={'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'}
     conn.request("HEAD", req,None,headers)
     res = conn.getresponse()
+    conn.close()
     if res.status in [301, 304]:
         url = res.getheader('Location')
     # removes annoying UTM params to urls.
@@ -93,8 +94,9 @@ def fetchFeed(feed):
         try:
            u = urlSanitize(item['links'][0]['href'])
         except:
-           print >>sys.stderr, "[!] couldn't sanitize url", item['links'][0]['href']
-           u = ''
+           print >>sys.stderr, "[!] couldn't sanitize url, leaving as is", item['links'][0]['href']
+           print >>sys.stderr, traceback.format_exc()
+           u = item['links'][0]['href']
         if feed.item_set.filter(url=u).all():
             continue
 
