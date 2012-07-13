@@ -49,7 +49,7 @@ def urlSanitize(url):
         conn = httplib.HTTPConnection(us.netloc, timeout=3)
         req = urllib.quote(url[7+len(us.netloc):])
     elif us.scheme=='https':
-        conn = httplib.HTTPSConnection(us.netloc)
+        conn = httplib.HTTPSConnection(us.netloc, timeout=8)
         req = urllib.quote(url[8+len(us.netloc):])
     #conn.set_debuglevel(9)
     headers={'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'}
@@ -74,19 +74,19 @@ def clean(txt):
                                                                   'wrap' : 0})))))
 
 def fetchFeed(feed):
-    #print '[!] parsing %s - %s' % (feed.name, feed.url)
+    #print u'[!] parsing %s - %s' % (feed.name, feed.url)
     counter = 0
     modified = feed.modified.timetuple() if feed.modified else None
     f = parse(feed.url, etag=feed.etag, modified=modified)
     if not f:
-        print >>sys.stderr, '[!] cannot parse %s - %s' % (feed.name, feed.url)
+        print >>sys.stderr, u'[!] cannot parse %s - %s' % (feed.name, feed.url)
         return
     try:
         feed.etag = f.etag
     except AttributeError:
         pass
     try:
-        feed.modified = datetime(*f.modified[:6])
+       feed.modified = datetime.strptime(' '.join(f.modified.split()[:-1]),"%a, %d %b %Y %H:%M:%S")
     except AttributeError:
         pass
     d = feed.updated
@@ -94,12 +94,14 @@ def fetchFeed(feed):
         try:
            u = urlSanitize(item['links'][0]['href'])
         except:
-           print >>sys.stderr, "[!] couldn't sanitize url, leaving as is", item['links'][0]['href']
-           print >>sys.stderr, traceback.format_exc()
-           u = item['links'][0]['href']
-        if feed.item_set.filter(url=u).all():
+           #print >>sys.stderr, u"[!] couldn't sanitize url, leaving as is", item['links'][0].get('href')
+           #print >>sys.stderr, traceback.format_exc()
+           u = item['links'][0].get('href')
+        if not u or feed.item_set.filter(url=u).all():
+            #print 'skipping', u.encode('utf8')
             continue
 
+        #print 'adding', u.encode('utf8')
         try:
             tmp_date = datetime(*item['updated_parsed'][:6])
         except:
@@ -115,7 +117,7 @@ def fetchFeed(feed):
                     try:
                         c = cleaner.clean_html(clean(unicode(item[key])))
                     except:
-                        print u
+                        #print u
                         print clean(unicode(item.get(key)))
                     break
         t = unicode(item.get('title',''))
