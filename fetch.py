@@ -21,6 +21,8 @@
 
 import sys, os, re
 
+verbose=False
+
 sys.path.append('/home/stf/')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'f33dme.settings'
 
@@ -74,7 +76,7 @@ def clean(txt):
                                                                   'wrap' : 0})))))
 
 def fetchFeed(feed):
-    #print u'[!] parsing %s - %s' % (feed.name, feed.url)
+    if verbose: print u'[!] parsing %s - %s' % (feed.name, feed.url)
     counter = 0
     modified = feed.modified.timetuple() if feed.modified else None
     f = parse(feed.url, etag=feed.etag, modified=modified)
@@ -101,7 +103,7 @@ def fetchFeed(feed):
             #print 'skipping', u.encode('utf8')
             continue
 
-        #print 'adding', u.encode('utf8')
+        if verbose: print 'adding', u.encode('utf8')
         try:
             tmp_date = datetime(*item['updated_parsed'][:6])
         except:
@@ -140,5 +142,6 @@ def fetchFeed(feed):
     return counter
 
 if __name__ == '__main__':
+    if len(sys.argv)>1 and sys.argv[1]=='-v': verbose=True
     counter = sum(imap(fetchFeed, Feed.objects.all()))
     print '[!] %d item added' % counter
