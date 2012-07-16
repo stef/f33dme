@@ -28,7 +28,13 @@ DEPENDENCIES:
 - jquery - http://jquery.com/
 - jquery infinite scroll - http://www.infinite-scroll.com/infinite-scroll-jquery-plugin/ ; https://github.com/paulirish/infinite-scroll
 - python-utidylib
+- python-requests
 - lxml, beautifulsoup
+
+for the experimental analysis engine:
+- pyhunspell (+libhunspell and appropriate dictionaries) https://code.google.com/p/pyhunspell/
+- nltk, http://www.nltk.org/
+- guess-language https://code.google.com/p/guess-language/
 
 INSTALL:
 --------

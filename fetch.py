@@ -37,8 +37,7 @@ from lxml.html.soupparser import parse as xmlparse
 from lxml.etree import tostring
 from urlparse import urljoin, urlparse, urlunparse
 from itertools import ifilterfalse, imap
-import urllib, httplib, traceback
-import tidy
+import urllib, httplib, traceback, tidy, requests
 
 cleaner = Cleaner(host_whitelist=['www.youtube.com'])
 
@@ -78,17 +77,25 @@ def clean(txt):
 def fetchFeed(feed):
     if verbose: print u'[!] parsing %s - %s' % (feed.name, feed.url)
     counter = 0
-    modified = feed.modified.timetuple() if feed.modified else None
-    f = parse(feed.url, etag=feed.etag, modified=modified)
+    headers={'ETag': feed.etag}
+    if feed.modified:
+        headers['Last-Modified']=feed.modified.isoformat()
+    try:
+        resp=requests.post(feed.url, headers=headers, timeout=4)
+    except:
+        print >>sys.stderr, u"[!] couldn't fetch feed, skip", feed.name
+        print >>sys.stderr, traceback.format_exc()
+        return counter
+    f = parse(resp.text)
     if not f:
         print >>sys.stderr, u'[!] cannot parse %s - %s' % (feed.name, feed.url)
-        return
+        return counter
     try:
-        feed.etag = f.etag
+        feed.etag = resp.headers['etag']
     except AttributeError:
         pass
     try:
-       feed.modified = datetime.strptime(' '.join(f.modified.split()[:-1]),"%a, %d %b %Y %H:%M:%S")
+       feed.modified = datetime.strptime(' '.join(resp.headers['last-modified'].split()[:-1]),"%a, %d %b %Y %H:%M:%S")
     except AttributeError:
         pass
     d = feed.updated
