@@ -79,13 +79,14 @@ def fetchFeed(feed):
     counter = 0
     headers={'ETag': feed.etag}
     if feed.modified:
-        headers['Last-Modified']=feed.modified.isoformat()
+        headers['Last-Modified']=feed.modified.strftime("%a, %d %b %Y %H:%M:%S")
     try:
-        resp=requests.post(feed.url, headers=headers, timeout=4)
+        resp=requests.get(feed.url, headers=headers, timeout=4)
     except:
         print >>sys.stderr, u"[!] couldn't fetch feed, skip", feed.name
         print >>sys.stderr, traceback.format_exc()
         return counter
+    if len(' '.join(resp.text.split()))<=0: return
     f = parse(resp.text)
     if not f:
         print >>sys.stderr, u'[!] cannot parse %s - %s' % (feed.name, feed.url)
